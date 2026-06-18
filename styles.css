@@ -1139,6 +1139,8 @@ details.faq-item .faq-body {
 }
 
 .footer-hours-row .day { font-weight: 600; color: rgba(255,247,240,.85); }
+.footer-hours-today { color: var(--blush) !important; font-weight: 700; }
+.footer-hours-today .day { color: var(--blush) !important; }
 
 .footer-bottom {
   max-width: var(--max-w);

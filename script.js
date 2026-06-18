@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── 4. RENDER HOURS FROM DATA ──────────────────────────
   const hoursBody = document.getElementById('hours-table-body');
-  const footerHours = document.getElementById('footer-hours');
   const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
 
   if (hoursBody && typeof STORE !== 'undefined' && STORE.hours) {
@@ -84,16 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  if (footerHours && typeof STORE !== 'undefined' && STORE.hours) {
-    footerHours.innerHTML = STORE.hours.map(row => {
-      const isClosed = !row.open;
-      const hoursText = isClosed ? 'Closed' : `${row.open} - ${row.close}`;
-      return `<div class="footer-hours-row">
-        <span class="day">${row.day.slice(0,3)}</span>
-        <span>${hoursText}</span>
-      </div>`;
-    }).join('');
-  }
 
   // ── 5. POPULATE CONTACT DETAILS FROM DATA ─────────────
   if (typeof STORE !== 'undefined') {
@@ -302,6 +291,24 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="schedule-week-grid">${weekCells}</div>
         ${fallbackNote}
       </div>`;
+
+    // Keep footer hours in sync with the same week's actual schedule
+    const footerHours = document.getElementById('footer-hours');
+    if (footerHours) {
+      const DAY_NAMES = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      footerHours.innerHTML = DAY_NAMES.map((name, i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const entry  = getScheduleForDate(d);
+        const isOpen = entry && entry.open;
+        const isToday = d.toDateString() === today.toDateString();
+        const hoursText = isOpen ? `${entry.open} - ${entry.close}` : 'Closed';
+        return `<div class="footer-hours-row${isToday ? ' footer-hours-today' : ''}">
+          <span class="day">${name.slice(0,3)}</span>
+          <span>${hoursText}</span>
+        </div>`;
+      }).join('');
+    }
   }
 
   function scheduleMidnightRefresh(fn) {
